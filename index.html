@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WTM London 2026 Meetings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: quiet run sheet. No rules or borders; separation comes from space, soft surfaces and shadow. Serif display, gold used sparingly. */
+:root{
+  --bg:#F5F7F6; --surface:#FFFFFF; --sunk:#EDF2F0; --soft:#F3F6F5; --line:#E3EAE8;
+  --ink:#10292C; --muted:#5E7573; --faint:#93A5A3;
+  --accent:#B08432; --accent-ink:#7A5514; --accent-soft:#F6ECD6;
+  --teal:#0E6B66; --teal-soft:#DCEFEC;
+  --hot:#C2410C; --hot-soft:#FDE8DC; --warm:#A8731A; --warm-soft:#FAF0D8; --cold:#3B6E8F; --cold-soft:#E0ECF4;
+  --ok:#2F7D4F; --ok-soft:#E0F2E6; --bad:#9F2D2D; --bad-soft:#F7E2E2;
+  --shadow:0 1px 2px rgba(16,41,44,.04), 0 18px 40px -22px rgba(16,41,44,.18);
+  --f-display:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1516; --surface:#122122; --sunk:#0D1A1B; --soft:#172A2B; --line:#1F3334;
+  --ink:#E6EFED; --muted:#9AB2B0; --faint:#6C8584;
+  --accent:#D9B26A; --accent-ink:#E8C887; --accent-soft:#33280F;
+  --teal:#5CC2B8; --teal-soft:#123634;
+  --hot:#FF8A5B; --hot-soft:#3D1F12; --warm:#E9B95A; --warm-soft:#33280F; --cold:#86B6D6; --cold-soft:#15283A;
+  --ok:#6DCB93; --ok-soft:#14301F; --bad:#EE8B8B; --bad-soft:#381717;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -22px rgba(0,0,0,.7);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1516; --surface:#122122; --sunk:#0D1A1B; --soft:#172A2B; --line:#1F3334;
+  --ink:#E6EFED; --muted:#9AB2B0; --faint:#6C8584;
+  --accent:#D9B26A; --accent-ink:#E8C887; --accent-soft:#33280F;
+  --teal:#5CC2B8; --teal-soft:#123634;
+  --hot:#FF8A5B; --hot-soft:#3D1F12; --warm:#E9B95A; --warm-soft:#33280F; --cold:#86B6D6; --cold-soft:#15283A;
+  --ok:#6DCB93; --ok-soft:#14301F; --bad:#EE8B8B; --bad-soft:#381717;
+  --shadow:0 1px 0 rgba(255,255,255,.03), 0 18px 40px -22px rgba(0,0,0,.7);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1020px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:56px 110px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
+button,input,textarea,select{font:inherit;color:inherit}
+button{border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+/* header */
+header{display:grid;grid-template-columns:1fr auto;gap:24px 40px;align-items:end}
+.eyebrow{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.stand{font-family:var(--f-mono);font-size:11.5px;color:var(--accent-ink);letter-spacing:.16em}
+h1{font-size:clamp(40px,7vw,68px);font-weight:500;letter-spacing:-.015em;line-height:1;margin-top:18px}
+h1 span{color:var(--accent);font-style:italic;font-weight:400;padding-inline:.06em}
+.sub{color:var(--muted);margin:18px 0 0;max-width:56ch;font-size:15.5px;line-height:1.65}
+.sync{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px;justify-self:end;white-space:nowrap}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--faint);display:inline-block}
+.sync.ok i{background:var(--ok)} .sync.local i{background:var(--warm)} .sync.busy i{background:var(--accent)}
+
+/* tally: open figures, no boxes */
+.tally{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 48px}
+.tally>div{min-width:0;display:flex;flex-direction:column;gap:6px}
+.tally b{display:block;font-family:var(--f-display);font-size:56px;font-weight:500;line-height:1;letter-spacing:-.01em;font-variant-numeric:lining-nums tabular-nums;font-feature-settings:"lnum" 1}
+.tally small{color:var(--muted);font-size:13px}
+.bar{height:3px;background:var(--sunk);border-radius:2px;margin-top:6px;overflow:hidden;max-width:140px}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s}
+@media (max-width:640px){.tally{grid-template-columns:repeat(2,minmax(0,1fr))}.tally b{font-size:46px}}
+
+/* toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px;margin-block:-14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.chipbtn{background:var(--sunk);padding:9px 18px;border-radius:999px;font-size:13.5px;cursor:pointer;font-weight:500;color:var(--muted);transition:background .15s,color .15s}
+.chipbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chipbtn .n{font-family:var(--f-mono);font-size:11.5px;opacity:.7;margin-left:6px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--surface);box-shadow:var(--shadow);padding:9px 18px;border-radius:999px;font-size:13.5px;cursor:pointer;font-weight:500}
+.btn:hover{color:var(--accent-ink)}
+.chipbtn:not([aria-pressed="true"]):hover{background:var(--soft);color:var(--ink)}
+
+/* day */
+.day{display:flex;flex-direction:column;gap:22px}
+.dayhead{display:flex;align-items:baseline;gap:8px 20px;flex-wrap:wrap;padding-inline:4px}
+.dayhead h2{font-size:clamp(28px,4vw,38px);font-weight:500;letter-spacing:-.005em}
+.dayhead .meta{color:var(--muted);font-size:13px}
+.list{display:flex;flex-direction:column;gap:12px}
+
+.slot{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:grid;grid-template-columns:92px minmax(0,1fr) auto 24px;gap:20px;align-items:center;padding:24px 28px;cursor:pointer;width:100%;text-align:left;background:none}
+.row:hover{background:var(--soft)}
+.slot.open .row{background:none}
+.time{font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;line-height:1.4;color:var(--ink)}
+.time small{display:block;color:var(--faint);font-size:12px}
+.who{min-width:0}
+.who .co{font-family:var(--f-display);font-weight:600;font-size:23px;line-height:1.15;letter-spacing:-.003em}
+.who .ct{color:var(--muted);font-size:14px;margin-left:4px}
+.who .ctx{font-size:13.5px;color:var(--muted);margin-top:6px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:11.5px;font-weight:500;padding:4px 11px;border-radius:999px;white-space:nowrap;letter-spacing:.03em}
+.p-upcoming{background:var(--sunk);color:var(--muted)}
+.p-note{background:var(--accent-soft);color:var(--accent-ink)}
+.p-met{background:var(--ok-soft);color:var(--ok)}
+.p-resched{background:var(--accent-soft);color:var(--accent-ink)}
+.p-noshow,.p-cancel{background:var(--bad-soft);color:var(--bad)}
+.p-hot{background:var(--hot-soft);color:var(--hot)}
+.p-warm{background:var(--warm-soft);color:var(--warm)}
+.p-cold{background:var(--cold-soft);color:var(--cold)}
+.chev{color:var(--faint);transition:transform .25s;justify-self:end}
+.slot.open .chev{transform:rotate(90deg)}
+.slot.lunch .co{font-weight:500;font-style:italic}
+.gap{padding:6px 28px 6px 140px;font-size:13px;font-style:italic;color:var(--faint)}
+@media (max-width:640px){
+  .row{grid-template-columns:60px minmax(0,1fr) 20px;gap:8px 14px;padding:20px 18px}
+  .tags{grid-column:2;justify-content:flex-start;grid-row:2}
+  .chev{grid-column:3;grid-row:1}
+  .who .co{font-size:21px}
+  .gap{padding-left:92px}
+}
+
+/* panel */
+.panel{padding:4px 28px 32px 140px;display:grid;gap:26px}
+@media (max-width:640px){.panel{padding:4px 18px 26px}}
+.facts{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;color:var(--muted)}
+.facts .mono{color:var(--ink);font-size:12.5px;user-select:all}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+@media (max-width:640px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:10px;min-width:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{background:var(--sunk);color:var(--muted);padding:8px 16px;border-radius:999px;font-size:13.5px;cursor:pointer;transition:background .15s,color .15s}
+.opt:hover{color:var(--ink)}
+.opt[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.opt.hot[aria-pressed="true"]{background:var(--hot);color:#fff}
+.opt.warm[aria-pressed="true"]{background:var(--warm);color:#fff}
+.opt.cold[aria-pressed="true"]{background:var(--cold);color:#fff}
+textarea,input[type="text"],input[type="date"]{width:100%;border:0;background:var(--sunk);border-radius:12px;padding:12px 16px;font-size:14.5px}
+textarea{min-height:200px;resize:vertical;line-height:1.7;padding:18px 20px}
+textarea:focus,input:focus{outline:none;box-shadow:0 0 0 2px var(--accent)}
+::placeholder{color:var(--faint)}
+.saved{font-size:12px;color:var(--faint)}
+[disabled]{opacity:.65;cursor:not-allowed}
+
+/* follow-ups */
+.fu h2{font-size:clamp(28px,4vw,38px);font-weight:500;padding-inline:4px}
+.fu p.empty{color:var(--muted);font-size:15px;margin:18px 4px 0;max-width:58ch;line-height:1.65}
+.tablewrap{overflow-x:auto;margin-top:22px;border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:22px 24px 10px}
+td{padding:18px 24px;vertical-align:top}
+tbody tr:hover td{background:var(--soft)}
+td.mono{white-space:nowrap}
+.foot{font-size:12.5px;color:var(--faint);padding-inline:4px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;font-size:13px;z-index:20}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.p-rescheduled{background:var(--accent-soft);color:var(--accent-ink)}
+.p-cancelled{background:var(--bad-soft);color:var(--bad)}
+.p-unsaved{background:var(--ink);color:var(--bg)}
+.empty{color:var(--muted);font-size:15px;margin:0 4px;max-width:60ch;line-height:1.65}
+.savebar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:6px}
+.save{background:var(--sunk);color:var(--faint);padding:12px 26px;border-radius:999px;font-size:14px;font-weight:500;cursor:not-allowed;transition:background .15s,color .15s}
+.save.ready{background:var(--ink);color:var(--bg);cursor:pointer;box-shadow:var(--shadow)}
+.save.ready:hover{background:var(--accent);color:#fff}
+.saved.ok{color:var(--ok)} .saved.err{color:var(--bad)}
+body{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow"><span class="stand">STAND N11-220</span><span class="label">Sri Lanka Booth · ExCeL London · Times in London (GMT)</span></div>
+      <h1>WTM London 2026 <span>/</span> Meetings</h1>
+      <p class="sub">Tap a meeting, fill in how it went, then press <b>Save to sheet</b>. Your notes go straight into the Google Sheet.</p>
+    </div>
+    <div class="sync busy" id="sync" aria-live="polite"><i></i><span>Loading from sheet…</span></div>
+  </header>
+
+  <section class="tally" aria-label="Summary">
+    <div><span class="label">Booked</span><b id="t-total">–</b><small id="t-days">meetings</small></div>
+    <div><span class="label">Logged</span><b id="t-logged">–</b><small id="t-logged-s">with notes</small><div class="bar"><i id="t-bar"></i></div></div>
+    <div><span class="label">Hot leads</span><b id="t-hot">–</b><small>marked hot</small></div>
+    <div><span class="label">Follow-ups</span><b id="t-fu">–</b><small>next steps recorded</small></div>
+  </section>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Filter meetings" id="filters"></div>
+    <div class="actions">
+      <button class="btn" id="refresh" type="button">Refresh from sheet</button>
+      <button class="btn" id="copy" type="button">Copy summary</button>
+    </div>
+  </div>
+
+  <div id="days"><p class="empty" id="loading">Loading your meetings…</p></div>
+
+  <section class="fu" id="followups">
+    <h2>Follow-ups after WTM</h2>
+    <div id="fu-body"></div>
+  </section>
+
+  <p class="foot">Everything here is read from, and saved to, the “Meetings” tab of your Google Sheet.</p>
+</div>
+
+<script>
+const STATUS = ["Upcoming","Met","Rescheduled","No-show","Cancelled"];
+const INTEREST = ["Hot","Warm","Cold"];
+const cls = s => String(s).toLowerCase().replace(/[^a-z]/g,"");
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let meetings = [], byId = {}, filter = "all";
+
+/* ---------- helpers ---------- */
+const isLunch = m => /^lunch/i.test(m.company);
+const statusOf = m => m.status || (isLunch(m) ? "" : "Upcoming");
+const hasNotes = m => (m.notes||"").trim();
+const hasNext  = m => (m.next||"").trim();
+const dirtyAny = () => meetings.some(m => m._dirty);
+function setSync(c, t){ const el=$("#sync"); el.className="sync "+c; $("span",el).textContent=t; }
+function toast(t){ const el=document.createElement("div"); el.className="toast"; el.textContent=t; document.body.appendChild(el); setTimeout(()=>el.remove(),2400); }
+function draftKey(id){ return "wtm26-draft-"+id; }
+function draftSave(m){ try{ localStorage.setItem(draftKey(m.id), JSON.stringify({status:m.status,interest:m.interest,notes:m.notes,next:m.next,followUp:m.followUp,owner:m.owner})); }catch(e){} }
+function draftClear(id){ try{ localStorage.removeItem(draftKey(id)); }catch(e){} }
+function draftLoad(id){ try{ return JSON.parse(localStorage.getItem(draftKey(id))||"null"); }catch(e){ return null; } }
+
+/* ---------- load ---------- */
+function load(){
+  setSync("busy","Loading from sheet…");
+  google.script.run
+    .withSuccessHandler(rows => {
+      meetings = rows; byId = {};
+      meetings.forEach(m => { byId[m.id]=m; const d=draftLoad(m.id); if(d){ Object.assign(m,d); m._dirty=true; m._restored=true; } });
+      build();
+      setSync("ok","Connected to sheet");
+    })
+    .withFailureHandler(err => {
+      $("#days").innerHTML = `<p class="empty">Could not read the sheet. ${esc(err && err.message || err)}</p>`;
+      setSync("local","Not connected");
+    })
+    .getMeetings();
+}
+
+/* ---------- build ---------- */
+function build(){
+  const order = []; meetings.forEach(m => { if(!order.includes(m.day)) order.push(m.day); });
+  $("#days").innerHTML = order.map(day => {
+    const ms = meetings.filter(m => m.day===day);
+    return `<section class="day" data-day="${esc(day)}">
+      <div class="dayhead"><h2>${esc(day)}</h2><span class="meta mono">${ms.length} ${ms.length===1?"meeting":"meetings"} · ${esc(ms[0].start)}–${esc(ms[ms.length-1].end)}</span></div>
+      <div class="list">${ms.map(slotHTML).join("")}</div></section>`;
+  }).join("") || `<p class="empty">No meetings found in the sheet.</p>`;
+  buildFilters();
+  meetings.forEach(m => { paintSlot(m.id); fillInputs(m); });
+  paintSummary();
+}
+function slotHTML(m){
+  const facts = [];
+  if(m.email) facts.push(`<span>Email <span class="mono">${esc(m.email)}</span></span>`);
+  else if(!isLunch(m)) facts.push(`<span>No contact email on the booking</span>`);
+  if(m.guest) facts.push(`<span>Guest <span class="mono">${esc(m.guest)}</span></span>`);
+  if(m.dur) facts.push(`<span>${esc(m.dur)} min</span>`);
+  return `<div class="slot${isLunch(m)?" lunch":""}" data-id="${esc(m.id)}">
+    <button type="button" class="row" aria-expanded="false">
+      <span class="time">${esc(m.start)}<small>${esc(m.end)}</small></span>
+      <span class="who"><span class="co">${esc(m.company)}</span> <span class="ct">· ${esc(m.contact)}</span>
+        ${m.ctx?`<span class="ctx" style="display:block">${esc(m.ctx)}</span>`:""}</span>
+      <span class="tags" data-tags></span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="panel" hidden>
+      <div class="facts">${facts.join("")}</div>
+      <div class="grid2">
+        <div class="field"><span class="label">Status</span><div class="opts" data-group="status">${STATUS.map(v=>`<button type="button" class="opt" data-v="${v}" aria-pressed="false">${v}</button>`).join("")}</div></div>
+        <div class="field"><span class="label">Interest</span><div class="opts" data-group="interest">${INTEREST.map(v=>`<button type="button" class="opt ${cls(v)}" data-v="${v}" aria-pressed="false">${v}</button>`).join("")}</div></div>
+      </div>
+      <label class="field"><span class="label">What we discussed</span><textarea data-k="notes" placeholder="Volumes, products they want, rates, markets, concerns…"></textarea></label>
+      <label class="field"><span class="label">Next step</span><textarea data-k="next" style="min-height:110px" placeholder="e.g. Send Sri Lanka &amp; Maldives contract rates by 14 Nov"></textarea></label>
+      <div class="grid2">
+        <label class="field"><span class="label">Follow up by</span><input type="date" data-k="followUp"></label>
+        <label class="field"><span class="label">Owner</span><input type="text" data-k="owner" placeholder="Insaf, Suranjith…"></label>
+      </div>
+      <div class="savebar"><button type="button" class="save" data-save disabled>Save to sheet</button><span class="saved" data-msg></span></div>
+    </div></div>`;
+}
+function fillInputs(m){
+  const s = $(`.slot[data-id="${CSS.escape(m.id)}"]`); if(!s) return;
+  s.querySelectorAll("[data-k]").forEach(i => { i.value = m[i.dataset.k] || ""; });
+}
+function grow(t){ t.style.height="auto"; const min=parseInt(getComputedStyle(t).minHeight)||0; t.style.height=Math.max(t.scrollHeight+2,min)+"px"; }
+
+/* ---------- paint ---------- */
+function paintSlot(id){
+  const m = byId[id], s = $(`.slot[data-id="${CSS.escape(id)}"]`); if(!s) return;
+  const tags = [], st = statusOf(m);
+  if(m._dirty) tags.push(`<span class="pill p-unsaved">Unsaved</span>`);
+  if(st) tags.push(`<span class="pill p-${cls(st)}">${esc(st)}</span>`);
+  if(m.interest) tags.push(`<span class="pill p-${cls(m.interest)}">${esc(m.interest)}</span>`);
+  if(hasNotes(m) || hasNext(m)) tags.push(`<span class="pill p-note">Notes</span>`);
+  $("[data-tags]",s).innerHTML = tags.join("");
+  s.querySelectorAll("[data-group]").forEach(g => g.querySelectorAll(".opt").forEach(o =>
+    o.setAttribute("aria-pressed", (g.dataset.group==="status" ? st : m.interest)===o.dataset.v)));
+  const btn = $("[data-save]",s), msg = $("[data-msg]",s);
+  if(m._saving){ btn.disabled=true; btn.textContent="Saving…"; }
+  else { btn.textContent="Save to sheet"; btn.disabled = !m._dirty; btn.classList.toggle("ready", !!m._dirty); }
+  if(m._error){ msg.textContent = m._error; msg.className="saved err"; }
+  else if(m._dirty){ msg.textContent = m._restored ? "Unsaved draft restored from this device." : "You have unsaved changes."; msg.className="saved"; }
+  else if(m.updated){ msg.textContent = "Saved to sheet · " + m.updated; msg.className="saved ok"; }
+  else { msg.textContent=""; msg.className="saved"; }
+}
+function matches(m){
+  if(filter==="tolog") return !isLunch(m) && !hasNotes(m);
+  if(filter==="hot") return m.interest==="Hot";
+  if(filter==="followup") return !!hasNext(m);
+  if(filter==="unsaved") return !!m._dirty;
+  return true;
+}
+function applyFilter(){
+  document.querySelectorAll(".day").forEach(d => {
+    let any=false;
+    d.querySelectorAll(".slot").forEach(s => { const ok=matches(byId[s.dataset.id]); s.hidden=!ok; any=any||ok; });
+    d.hidden=!any;
+  });
+}
+function buildFilters(){
+  const defs = [["all","All"],["tolog","Needs notes"],["hot","Hot"],["followup","Has next step"],["unsaved","Unsaved"]];
+  $("#filters").innerHTML = defs.map(([k,l]) => `<button type="button" class="chipbtn" data-f="${k}" aria-pressed="${k===filter}">${l}<span class="n" data-count="${k}"></span></button>`).join("");
+}
+function fmtDate(iso){ const d=new Date(iso+"T00:00:00"); return isNaN(d)?iso:d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}); }
+function paintSummary(){
+  const real = meetings.filter(m=>!isLunch(m));
+  const logged = real.filter(hasNotes).length;
+  const hot = meetings.filter(m=>m.interest==="Hot").length;
+  const fus = meetings.filter(hasNext);
+  const unsaved = meetings.filter(m=>m._dirty).length;
+  const days = new Set(meetings.map(m=>m.day)).size;
+  $("#t-total").textContent = meetings.length;
+  $("#t-days").textContent = `slots over ${days} ${days===1?"day":"days"}`;
+  $("#t-logged").textContent = logged;
+  $("#t-logged-s").textContent = `of ${real.length} meetings with notes`;
+  $("#t-bar").style.width = real.length ? (logged/real.length*100)+"%" : "0";
+  $("#t-hot").textContent = hot;
+  $("#t-fu").textContent = fus.length;
+  const counts = {all:meetings.length, tolog:real.length-logged, hot, followup:fus.length, unsaved};
+  document.querySelectorAll("[data-count]").forEach(n => n.textContent = counts[n.dataset.count]);
+  applyFilter();
+  const rank = {Hot:0,Warm:1,Cold:2,"":3};
+  const rows = fus.slice().sort((a,b)=>(rank[a.interest||""]-rank[b.interest||""]) || String(a.followUp||"9").localeCompare(String(b.followUp||"9")));
+  $("#fu-body").innerHTML = rows.length ? `<div class="tablewrap"><table><thead><tr><th>Partner</th><th>Interest</th><th>Next step</th><th>By</th><th>Owner</th></tr></thead><tbody>${
+    rows.map(m=>`<tr><td><b>${esc(m.company)}</b><br><span style="color:var(--muted)">${esc(m.contact)} · ${esc(m.day.split(" ")[0].slice(0,3))} ${esc(m.start)}</span></td>
+      <td>${m.interest?`<span class="pill p-${cls(m.interest)}">${esc(m.interest)}</span>`:"–"}</td>
+      <td>${esc(m.next)}</td><td class="mono">${m.followUp?esc(fmtDate(m.followUp)):"–"}</td><td>${esc(m.owner)||"–"}</td></tr>`).join("")
+  }</tbody></table></div>` : `<p class="empty">Next steps you save on any meeting collect here, hot leads first.</p>`;
+}
+
+/* ---------- interaction ---------- */
+function markDirty(m){ m._dirty=true; m._error=""; m._restored=false; draftSave(m); paintSlot(m.id); paintSummary(); }
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-f]");
+  if(f){ filter=f.dataset.f; document.querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.f===filter)); applyFilter(); return; }
+  const row = e.target.closest(".row");
+  if(row){ const s=row.closest(".slot"), p=$(".panel",s), open=p.hidden; p.hidden=!open; s.classList.toggle("open",open); row.setAttribute("aria-expanded",open); if(open) p.querySelectorAll("textarea").forEach(grow); return; }
+  const opt = e.target.closest(".opt");
+  if(opt){ const m=byId[opt.closest(".slot").dataset.id], g=opt.closest("[data-group]").dataset.group; const cur = g==="status" ? statusOf(m) : m.interest; m[g] = cur===opt.dataset.v ? "" : opt.dataset.v; markDirty(m); return; }
+  const sv = e.target.closest("[data-save]");
+  if(sv){ save(sv.closest(".slot").dataset.id); }
+});
+document.addEventListener("input", e => {
+  const k = e.target.dataset && e.target.dataset.k; if(!k) return;
+  if(e.target.tagName==="TEXTAREA") grow(e.target);
+  const m = byId[e.target.closest(".slot").dataset.id]; m[k]=e.target.value; markDirty(m);
+});
+
+function save(id){
+  const m = byId[id]; if(m._saving) return;
+  m._saving=true; m._error=""; paintSlot(id);
+  google.script.run
+    .withSuccessHandler(res => {
+      m._saving=false; m._dirty=false; m._restored=false; m.updated=res.updated; draftClear(id);
+      paintSlot(id); paintSummary(); setSync("ok","Saved to sheet"); toast("Saved to sheet");
+    })
+    .withFailureHandler(err => {
+      m._saving=false; m._error="Not saved: "+(err && err.message || err)+" Your text is kept here. Try again."; paintSlot(id); setSync("local","Save failed");
+    })
+    .saveMeeting({id:m.id, status:statusOf(m), interest:m.interest||"", notes:m.notes||"", next:m.next||"", followUp:m.followUp||"", owner:m.owner||""});
+}
+
+$("#refresh").addEventListener("click", () => {
+  if(dirtyAny()){ toast("Save or finish your unsaved meetings first"); return; }
+  load();
+});
+$("#copy").addEventListener("click", () => {
+  let out = "WTM London 2026 – Meeting feedback (Sri Lanka Booth N11-220)\n", day="";
+  meetings.forEach(m => {
+    if(m.day!==day){ day=m.day; out += `\n${day.toUpperCase()}\n`; }
+    out += `${m.start}–${m.end}  ${m.company} (${m.contact}) – ${statusOf(m)||"Lunch"}${m.interest?", "+m.interest:""}\n`;
+    if(hasNotes(m)) out += `   Notes: ${m.notes.replace(/\n+/g," ")}\n`;
+    if(hasNext(m)) out += `   Next: ${m.next}${m.followUp?" (by "+fmtDate(m.followUp)+")":""}${m.owner?" – "+m.owner:""}\n`;
+  });
+  const fallback = () => { const ta=document.createElement("textarea"); ta.value=out; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); toast("Summary copied"); }catch(e){ toast("Copy blocked"); } ta.remove(); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(out).then(()=>toast("Summary copied"), fallback); else fallback();
+});
+window.addEventListener("beforeunload", e => { if(dirtyAny()){ e.preventDefault(); e.returnValue=""; } });
+
+load();
+</script>
+</body>
+</html>
