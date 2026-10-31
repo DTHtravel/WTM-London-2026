@@ -165,6 +165,8 @@ td.mono{white-space:nowrap}
 .save.ready{background:var(--ink);color:var(--bg);cursor:pointer;box-shadow:var(--shadow)}
 .save.ready:hover{background:var(--accent);color:#fff}
 .saved.ok{color:var(--ok)} .saved.err{color:var(--bad)}
+.notice{background:var(--warm-soft);border-radius:16px;padding:20px 24px;font-size:14px;line-height:1.65;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.notice[hidden]{display:none}
 body{margin:0}
 </style>
 </head>
@@ -174,7 +176,7 @@ body{margin:0}
     <div>
       <div class="eyebrow"><span class="stand">STAND N11-220</span><span class="label">Sri Lanka Booth · ExCeL London · Times in London (GMT)</span></div>
       <h1>WTM London 2026 <span>/</span> Meetings</h1>
-      <p class="sub">Tap a meeting, fill in how it went, then press <b>Save to sheet</b>. Your notes go straight into the Google Sheet.</p>
+      <p class="sub">Tap a meeting, fill in how it went, then press <b>Save to sheet</b>. Your notes go straight into your Google Sheet.</p>
     </div>
     <div class="sync busy" id="sync" aria-live="polite"><i></i><span>Loading from sheet…</span></div>
   </header>
@@ -194,7 +196,8 @@ body{margin:0}
     </div>
   </div>
 
-  <div id="days"><p class="empty" id="loading">Loading your meetings…</p></div>
+  <div class="notice" id="notice" hidden></div>
+  <div id="days"></div>
 
   <section class="fu" id="followups">
     <h2>Follow-ups after WTM</h2>
@@ -211,7 +214,237 @@ const cls = s => String(s).toLowerCase().replace(/[^a-z]/g,"");
 const $ = (s, r=document) => r.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-let meetings = [], byId = {}, filter = "all";
+const SCHEDULE = [
+ {
+  "id": "m01",
+  "day": "Tuesday 3 Nov",
+  "start": "10:00",
+  "end": "11:00",
+  "dur": "60",
+  "company": "Company not on booking",
+  "contact": "Steve Manely",
+  "email": "",
+  "guest": "",
+  "ctx": "Booked as two back-to-back slots"
+ },
+ {
+  "id": "m02",
+  "day": "Tuesday 3 Nov",
+  "start": "11:00",
+  "end": "11:30",
+  "dur": "30",
+  "company": "Voyage Privé (France)",
+  "contact": "Arman Hovsepyan",
+  "email": "ahovsepyan@voyageprive.com",
+  "guest": "",
+  "ctx": "First meeting with Mr. Suranjith"
+ },
+ {
+  "id": "m03",
+  "day": "Tuesday 3 Nov",
+  "start": "11:30",
+  "end": "12:00",
+  "dur": "30",
+  "company": "DERTOUR",
+  "contact": "Sabine Wiegratz",
+  "email": "sabine.wiegratz@dertour.com",
+  "guest": "",
+  "ctx": "Partnership via connectivity. Suranjith is aware."
+ },
+ {
+  "id": "m04",
+  "day": "Tuesday 3 Nov",
+  "start": "12:00",
+  "end": "12:30",
+  "dur": "30",
+  "company": "Holiday Air",
+  "contact": "Sujith Vidanage",
+  "email": "",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m05",
+  "day": "Tuesday 3 Nov",
+  "start": "12:30",
+  "end": "13:00",
+  "dur": "30",
+  "company": "Tracoin",
+  "contact": "Valentina Bellone",
+  "email": "valentina.bellone@tracoin.com",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m06",
+  "day": "Tuesday 3 Nov",
+  "start": "13:00",
+  "end": "14:30",
+  "dur": "90",
+  "company": "Audley",
+  "contact": "Thea Wilson",
+  "email": "",
+  "guest": "",
+  "ctx": "90 minutes, booked as three slots"
+ },
+ {
+  "id": "m07",
+  "day": "Tuesday 3 Nov",
+  "start": "14:30",
+  "end": "15:00",
+  "dur": "30",
+  "company": "Lunch with Audley",
+  "contact": "Audley team",
+  "email": "",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m08",
+  "day": "Wednesday 4 Nov",
+  "start": "10:00",
+  "end": "10:30",
+  "dur": "30",
+  "company": "Best at Travel",
+  "contact": "Geshan Dias-Bandaranaike",
+  "email": "geshan@bestattravel.co.uk",
+  "guest": "",
+  "ctx": "Looking forward to meeting you and the team"
+ },
+ {
+  "id": "m09",
+  "day": "Wednesday 4 Nov",
+  "start": "10:30",
+  "end": "11:00",
+  "dur": "30",
+  "company": "alltours (Germany)",
+  "contact": "Christian Böhm",
+  "email": "christian.boehm@alltours.de",
+  "guest": "jonas.neubert@alltours.de",
+  "ctx": "Contracting alltours for Sri Lanka and Maldives. Guest: Jonas Neubert."
+ },
+ {
+  "id": "m10",
+  "day": "Wednesday 4 Nov",
+  "start": "11:00",
+  "end": "11:30",
+  "dur": "30",
+  "company": "Bradley Travel Store",
+  "contact": "Adam Huberman",
+  "email": "adam@bradleytravelstore.com",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m11",
+  "day": "Wednesday 4 Nov",
+  "start": "11:30",
+  "end": "12:00",
+  "dur": "30",
+  "company": "Bizigo",
+  "contact": "Volkan Kaya",
+  "email": "volkan.kaya@bizigo.com",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m12",
+  "day": "Wednesday 4 Nov",
+  "start": "12:30",
+  "end": "13:00",
+  "dur": "30",
+  "company": "Grasshopper Adventures",
+  "contact": "Kara Myers",
+  "email": "k.myers@grasshopperadventures.com",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m13",
+  "day": "Wednesday 4 Nov",
+  "start": "13:00",
+  "end": "13:30",
+  "dur": "30",
+  "company": "Vivido Travel",
+  "contact": "Tobias Boese",
+  "email": "tobias@vivido.travel",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m14",
+  "day": "Wednesday 4 Nov",
+  "start": "13:30",
+  "end": "14:00",
+  "dur": "30",
+  "company": "DERTOUR",
+  "contact": "Christian Shimak",
+  "email": "",
+  "guest": "",
+  "ctx": "Second DERTOUR meeting. Links with Sabine on Tuesday."
+ },
+ {
+  "id": "m15",
+  "day": "Wednesday 4 Nov",
+  "start": "14:00",
+  "end": "14:30",
+  "dur": "30",
+  "company": "Solos Holidays",
+  "contact": "Rhi Edmondson",
+  "email": "rhi@solosholidays.com",
+  "guest": "",
+  "ctx": ""
+ },
+ {
+  "id": "m16",
+  "day": "Wednesday 4 Nov",
+  "start": "14:30",
+  "end": "15:00",
+  "dur": "30",
+  "company": "Oliver Travel",
+  "contact": "Andrew",
+  "email": "",
+  "guest": "",
+  "ctx": "Surname not on booking"
+ },
+ {
+  "id": "m17",
+  "day": "Wednesday 4 Nov",
+  "start": "15:00",
+  "end": "15:30",
+  "dur": "30",
+  "company": "Eastbound Group",
+  "contact": "Prrithviraj Singh",
+  "email": "prrithviraj@eastboundgroup.com",
+  "guest": "disha@eastboundgroup.com",
+  "ctx": "Guest: Disha"
+ },
+ {
+  "id": "m18",
+  "day": "Wednesday 4 Nov",
+  "start": "15:30",
+  "end": "16:00",
+  "dur": "30",
+  "company": "One Traveller",
+  "contact": "Robert Barrett",
+  "email": "robert.barrett@onetraveller.co.uk",
+  "guest": "",
+  "ctx": "Their ref: CEY / CEYX"
+ },
+ {
+  "id": "m19",
+  "day": "Thursday 5 Nov",
+  "start": "10:30",
+  "end": "11:00",
+  "dur": "30",
+  "company": "Elegant Resorts",
+  "contact": "Julie Murray",
+  "email": "",
+  "guest": "",
+  "ctx": ""
+ }
+];
+let meetings = [], byId = {}, filter = "all", loaded = false, loadTimer = null;
 
 /* ---------- helpers ---------- */
 const isLunch = m => /^lunch/i.test(m.company);
@@ -226,21 +459,42 @@ function draftSave(m){ try{ localStorage.setItem(draftKey(m.id), JSON.stringify(
 function draftClear(id){ try{ localStorage.removeItem(draftKey(id)); }catch(e){} }
 function draftLoad(id){ try{ return JSON.parse(localStorage.getItem(draftKey(id))||"null"); }catch(e){ return null; } }
 
-/* ---------- load ---------- */
-function load(){
-  setSync("busy","Loading from sheet…");
-  google.script.run
-    .withSuccessHandler(rows => {
-      meetings = rows; byId = {};
-      meetings.forEach(m => { byId[m.id]=m; const d=draftLoad(m.id); if(d){ Object.assign(m,d); m._dirty=true; m._restored=true; } });
-      build();
-      setSync("ok","Connected to sheet");
-    })
-    .withFailureHandler(err => {
-      $("#days").innerHTML = `<p class="empty">Could not read the sheet. ${esc(err && err.message || err)}</p>`;
-      setSync("local","Not connected");
-    })
-    .getMeetings();
+/* ---------- connection to Google Sheet (through your Apps Script web app) ---------- */
+const API_URL = "https://script.google.com/macros/s/AKfycbxQ6i_H_-asWdN7gAakMw7LOs7MBjQFONpqhodPR7Em30DYz8HB6FrUgF1Gjpc-jgXQ/exec";
+
+async function api(action, data){
+  const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), 25000);
+  try{
+    // plain-text body on purpose: it avoids a browser pre-flight that Apps Script cannot answer
+    const res = await fetch(API_URL, {method:"POST", body:JSON.stringify(Object.assign({action}, data||{})), signal:ctl.signal});
+    const j = await res.json();
+    if(!j.ok) throw new Error(j.error||"Request failed");
+    return j;
+  }finally{ clearTimeout(t); }
+}
+
+function showNotice(html){ const n=$("#notice"); n.innerHTML=html; n.hidden=false; }
+function hideNotice(){ $("#notice").hidden=true; }
+function showOffline(detail){
+  setSync("local","Not connected to sheet");
+  showNotice(`<div><b>Can't reach the Google Sheet.</b> Your schedule is shown below, but saving is switched off until it connects.<br>Check your internet, and that the Apps Script web app is deployed with access set to "Anyone".${detail?`<br><span style="color:var(--bad)">${esc(detail)}</span>`:""}</div><button type="button" class="btn" id="retry">Retry</button>`);
+}
+function applyFeedback(rows){
+  rows.forEach(r => { const m=byId[r.id]; if(!m||m._dirty||m._saving) return;
+    m.status=r.status; m.interest=r.interest; m.notes=r.notes; m.next=r.next; m.followUp=r.followUp; m.owner=r.owner; m.updated=r.updated; });
+  meetings.forEach(m => { if(!m._dirty) fillInputs(m); paintSlot(m.id); });
+  paintSummary();
+}
+async function load(){
+  hideNotice();
+  setSync("busy","Loading your notes…");
+  try{
+    const r = await api("get");
+    loaded = true; applyFeedback(r.rows); setSync("ok","Connected to sheet");
+    meetings.forEach(m => paintSlot(m.id));
+  }catch(err){
+    showOffline(err.name==="AbortError" ? "The sheet took too long to answer." : err.message);
+  }
 }
 
 /* ---------- build ---------- */
@@ -304,8 +558,9 @@ function paintSlot(id){
     o.setAttribute("aria-pressed", (g.dataset.group==="status" ? st : m.interest)===o.dataset.v)));
   const btn = $("[data-save]",s), msg = $("[data-msg]",s);
   if(m._saving){ btn.disabled=true; btn.textContent="Saving…"; }
-  else { btn.textContent="Save to sheet"; btn.disabled = !m._dirty; btn.classList.toggle("ready", !!m._dirty); }
+  else { btn.textContent="Save to sheet"; btn.disabled = !m._dirty || !loaded; btn.classList.toggle("ready", !!m._dirty && loaded); }
   if(m._error){ msg.textContent = m._error; msg.className="saved err"; }
+  else if(m._dirty && !loaded){ msg.textContent = "Waiting for the sheet to connect before you can save."; msg.className="saved"; }
   else if(m._dirty){ msg.textContent = m._restored ? "Unsaved draft restored from this device." : "You have unsaved changes."; msg.className="saved"; }
   else if(m.updated){ msg.textContent = "Saved to sheet · " + m.updated; msg.className="saved ok"; }
   else { msg.textContent=""; msg.className="saved"; }
@@ -376,21 +631,20 @@ document.addEventListener("input", e => {
 function save(id){
   const m = byId[id]; if(m._saving) return;
   m._saving=true; m._error=""; paintSlot(id);
-  google.script.run
-    .withSuccessHandler(res => {
+  api("save", {meeting: {id:m.id, status:statusOf(m), interest:m.interest||"", notes:m.notes||"", next:m.next||"", followUp:m.followUp||"", owner:m.owner||""}})
+    .then(res => {
       m._saving=false; m._dirty=false; m._restored=false; m.updated=res.updated; draftClear(id);
       paintSlot(id); paintSummary(); setSync("ok","Saved to sheet"); toast("Saved to sheet");
     })
-    .withFailureHandler(err => {
-      m._saving=false; m._error="Not saved: "+(err && err.message || err)+" Your text is kept here. Try again."; paintSlot(id); setSync("local","Save failed");
-    })
-    .saveMeeting({id:m.id, status:statusOf(m), interest:m.interest||"", notes:m.notes||"", next:m.next||"", followUp:m.followUp||"", owner:m.owner||""});
+    .catch(err => {
+      m._saving=false;
+      m._error="Not saved: "+(err.name==="AbortError"?"the sheet took too long to answer":(err.message||err))+". Your text is kept here. Try again.";
+      paintSlot(id); setSync("local","Save failed");
+    });
 }
 
-$("#refresh").addEventListener("click", () => {
-  if(dirtyAny()){ toast("Save or finish your unsaved meetings first"); return; }
-  load();
-});
+$("#refresh").addEventListener("click", load);
+document.addEventListener("click", e => { if(e.target.id==="retry") load(); });
 $("#copy").addEventListener("click", () => {
   let out = "WTM London 2026 – Meeting feedback (Sri Lanka Booth N11-220)\n", day="";
   meetings.forEach(m => {
@@ -404,6 +658,9 @@ $("#copy").addEventListener("click", () => {
 });
 window.addEventListener("beforeunload", e => { if(dirtyAny()){ e.preventDefault(); e.returnValue=""; } });
 
+meetings = SCHEDULE.map(s => Object.assign({}, s, {status:"",interest:"",notes:"",next:"",followUp:"",owner:"",updated:""}));
+meetings.forEach(m => { byId[m.id]=m; const d=draftLoad(m.id); if(d){ Object.assign(m,d); m._dirty=true; m._restored=true; } });
+build();
 load();
 </script>
 </body>
