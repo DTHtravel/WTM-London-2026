@@ -460,7 +460,7 @@ function draftClear(id){ try{ localStorage.removeItem(draftKey(id)); }catch(e){}
 function draftLoad(id){ try{ return JSON.parse(localStorage.getItem(draftKey(id))||"null"); }catch(e){ return null; } }
 
 /* ---------- connection to Google Sheet (through your Apps Script web app) ---------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbxQ6i_H_-asWdN7gAakMw7LOs7MBjQFONpqhodPR7Em30DYz8HB6FrUgF1Gjpc-jgXQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzxWlSmiOdfRGV4E53qjX5o_uPs0PY_uVJ30dZ1SQ5n71MHwVnLUqqDkg8qR7fuD7z3aw/exec";
 
 async function api(action, data){
   const ctl = new AbortController(); const t = setTimeout(()=>ctl.abort(), 25000);
